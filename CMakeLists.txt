@@ -18,7 +18,9 @@ endif()
 include_directories(${GAMELIFT_SDK_PATH}/include)
 link_directories(${GAMELIFT_SDK_PATH}/lib)
 
-add_executable(amazon_gamelift_light_testing src/main.cpp)
+add_executable(amazon_gamelift_light_testing src/main.cpp
+        src/GameLiftServer.cpp
+        src/GameLiftServer.h)
 target_link_libraries(amazon_gamelift_light_testing PRIVATE aws-cpp-sdk-gamelift-server)
 
 find_package(OpenSSL REQUIRED)
