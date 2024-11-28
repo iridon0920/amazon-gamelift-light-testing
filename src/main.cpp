@@ -24,5 +24,5 @@ int main(int argc, char* argv[]) {
         processId
         );
 
-    return 0;
+    gameliftServer.DestorySDK();
 }

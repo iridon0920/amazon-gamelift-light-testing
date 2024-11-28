@@ -7,21 +7,28 @@ GameLiftServer::GameLiftServer() {
 GameLiftServer::~GameLiftServer() {
 }
 
-void GameLiftServer::onStartGameSession(Aws::GameLift::Server::Model::GameSession myGameSession) {
+void GameLiftServer::OnStartGameSession(Aws::GameLift::Server::Model::GameSession gameSession) {
+    std::cout << "[GameLift]Callback: OnStartGameSession" << std::endl;
     Aws::GameLift::GenericOutcome outcome = 
         Aws::GameLift::Server::ActivateGameSession();
 }
 
-void GameLiftServer::onProcessTerminate() {
+void GameLiftServer::OnProcessTerminate() {
+    std::cout << "[GameLift]Callback: OnProcessTerminate" << std::endl;
     Aws::GameLift::GenericOutcome outcome = 
         Aws::GameLift::Server::ProcessEnding();
+
+    Aws::GameLift::Server::Destroy();
 }
 
 bool GameLiftServer::OnHealthCheck() {
+    std::cout << "[GameLift]Callback: OnHealthCheck" << std::endl;
     return true;
 }
 
-void GameLiftServer::OnUpdateGameSession() {
+void GameLiftServer::OnUpdateGameSession(Aws::GameLift::Server::Model::UpdateGameSession gameSession) {
+    std::cout << "[GameLift]Callback: OnUpdateGameSession" << std::endl;
+
 }
 
 void GameLiftServer::SetupSDK(
@@ -51,4 +58,29 @@ void GameLiftServer::SetupSDK(
 
     std::cout << "GameLift SDK initialized successfully." << std::endl;
 
+    Aws::GameLift::Server::LogParameters logParams({"game.log"});
+    Aws::GameLift::Server::ProcessParameters processParameters =
+        Aws::GameLift::Server::ProcessParameters(
+            std::bind(&GameLiftServer::OnStartGameSession, this, std::placeholders::_1),
+            std::bind(&GameLiftServer::OnUpdateGameSession, this, std::placeholders::_1),
+            std::bind(&GameLiftServer::OnProcessTerminate, this),
+            std::bind(&GameLiftServer::OnHealthCheck, this),
+            1111,
+            logParams
+        );
+
+    Aws::GameLift::GenericOutcome outcome = Aws::GameLift::Server::ProcessReady(processParameters);
+
+}
+
+void GameLiftServer::DestorySDK() {
+    Aws::GameLift::GenericOutcome processEndingOutcome = Aws::GameLift::Server::ProcessEnding();
+    Aws::GameLift::Server::Destroy();
+
+    if (processEndingOutcome.IsSuccess()) {
+        exit(0);
+    } else {
+        std::cout << "ProcessEnding() failed. Error: " << processEndingOutcome.GetError().GetErrorMessage();
+        exit(-1);
+    }
 }

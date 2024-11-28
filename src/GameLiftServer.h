@@ -9,10 +9,10 @@ public:
     GameLiftServer();
     ~GameLiftServer();
 
-    void onStartGameSession(Aws::GameLift::Server::Model::GameSession);
-    void onProcessTerminate();
+    void OnStartGameSession(Aws::GameLift::Server::Model::GameSession);
+    void OnProcessTerminate();
     bool OnHealthCheck();
-    void OnUpdateGameSession();
+    void OnUpdateGameSession(Aws::GameLift::Server::Model::UpdateGameSession);
     void SetupSDK(
         std::string webSocketUrl,
         std::string authToken,
@@ -20,4 +20,5 @@ public:
         std::string hostId,
         std::string processId
         );
+    void DestorySDK();
 };
