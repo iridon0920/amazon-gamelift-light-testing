@@ -18,7 +18,8 @@ public:
         std::string authToken,
         std::string fleetId,
         std::string hostId,
-        std::string processId
+        std::string processId,
+        std::uint16_t port
         );
     void DestorySDK();
 };

@@ -36,7 +36,8 @@ void GameLiftServer::SetupSDK(
     std::string authToken,
     std::string fleetId,
     std::string hostId,
-    std::string processId
+    std::string processId,
+    std::uint16_t port
     ) {
 
     Aws::GameLift::Server::Model::ServerParameters serverParameters =
@@ -65,7 +66,7 @@ void GameLiftServer::SetupSDK(
             std::bind(&GameLiftServer::OnUpdateGameSession, this, std::placeholders::_1),
             std::bind(&GameLiftServer::OnProcessTerminate, this),
             std::bind(&GameLiftServer::OnHealthCheck, this),
-            1111,
+            port,
             logParams
         );
 
